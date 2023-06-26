@@ -1,0 +1,350 @@
+--------------------------------------------------------------------------------------------------
+Logic in Computer Science, Juny 15th, 2023. Time: 2h30min. No books or lecture notes allowed.
+--------------------------------------------------------------------------------------------------
+Note on evaluation: eval(propositional logic) = max(eval(Problems 1,2,3), eval(midterm exam))
+                    eval(first-order logic)   = eval(Problems 4,5,6).
+
+ - Insert your answers on the dotted lines ... below, and only there.
+ - Do NOT modify the problems
+ - When finished, upload this file with the same name: exam.txt
+ - Use the text symbols:     &     v    -       ->          |=        A       E
+     for                    AND   OR   NOT   IMPLIES   "SATISFIES"  FORALL  EXISTS,  like in:
+     I  |=  p & (q v -r)     (the interpretation I satisfies the formula p & (q v -r)  ).
+     You can write subindices using "_". For example write x_i to denote x-sub-i.
+--------------------------------------------------------------------------------------------------
+
+
+Problem 1. (3 points).
+
+For each one of the following statements, indicate if it is true or false for propositional logic.
+Answer T (true) or F (false) on each dotted line ... Give no explanations why.
+Below always F,G,H are formulas and I is an interpretation.
+Note: Wrong answers subtract 0.4 points. Unanswered questions subtract 0.2 points.
+
+     Answer:
+ 1)   ...     It is decidable in polynomial time whether a given formula is a tautology.
+ 2)   ...     If F is unsatisfiable, then for every G we have F |= G.
+ 3)   ...     The Tseitin transformation can be used for reducing SAT to 3-SAT.
+ 4)   ...     The formula  p  is a logical consequence of  (p v r)  &  (-q v r)  &  (q v r). 
+ 5)   ...     Given a formula F, the Tseitin transformation of F always has a number of clauses that is linear in the size of F.
+ 6)   ...     If F is tautology, then -F |= F.
+ 7)   ...     There are infinitely many different formulas that are not logically equivalent, even if there is only one predicate symbol.
+ 8)   ...     F is satisfiable if, and only if, all logical consequences of F are satisfiable formulas.
+ 9)   ...     If there are n propositional symbols, there are 2^(2n)  (2 to the power 2n) different clauses.
+10)   ...     Given I and F, it is decidable in linear time whether I |= F.
+11)   ...     If  F v G  |=  H  then F & -H is unsatisfiable. 
+12)   ...     The closure under resolution Res(S) of a finite set of clauses S is always a finite set of clauses.
+13)   ...     If F is a tautology, then for every G we have G |= F.
+14)   ...     It is decidable in polynomial time whether a given formula in DNF is satisfiable.
+15)   ...     Given a formula F, the Tseitin transformation of F is a set of clauses that is logically equivalent to F.
+16)   ...     The formula  (p v q) & (-p v q) & (-p v -q) & (-q v p)  is unsatisfiable.
+17)   ...     Given a set of Horn clauses S,  we can find in linear time a minimal model I of S, that is, a model I with the minimal |{ p | I(p)=1 }|.
+18)   ...     There are infinitely many different formulas, even if there is only one predicate symbol.
+
+
+--------------------------------------------------------------------------------------------------
+
+
+Problem 2. (4 points).
+
+2a)
+
+My friend John says that he has found a new way to speed up SAT solving.
+Before starting his SAT solver, he removes from the set of clauses S some clauses he calls "unnecessary":
+
+   A: if there is some variable x that appears only in positive literals of clauses of S,
+      then he removes from S all clauses containing x.
+
+   B: similarly, if some variable y appears in S only in negative literals
+      then he removes from S all clauses containing y.
+
+Note that after eliminating some "unnecessary" clauses, step A or B may be (or become) applicable for
+other variables, so John continues doing this until no more variables of type A or B exist and
+then launches his solver on a (hopefully) much smaller set of clauses.
+
+Is John's idea correct? Explain why (in approximately 50 words).
+
+
+Answer:
+
+...
+
+
+2b)
+
+Given two clauses C, D, in what follows we will denote the resolution of C and D by Res(C, D).
+
+Given a set of clauses S and a clause C, a literal l in C *blocks* C with respect to S if
+for each clause C' in S with -l in C', the conclusion (resolvent) Res(C, C') is a tautology
+
+We can identify the *blocked* clauses and remove them from the initial set of clauses S while preserving satisfiability.
+
+So we need to prove the following result:
+
+  if clause C in S is blocked by l with respect to S, and S - {C} is satisfiable, then so is S.
+
+Beginning of the prove:
+
+  Let I be such that I |= S - {C}. If I |= C then S is obviously satisfiable.
+  So let us assume that  not(I |= C). Define I' so that I'(l) = 1 - I(l),
+  I'(l') = I(l') if var(l') != var(l). Since l in C and not(I |= C), it must be I(l) = 0.
+  So I'(l) = 1 - I(l) = 1 and I' |= C.
+
+  In what follows we will prove that I' |= S - {C}.
+
+  To that end, let us consider C' in S, C' != C. We want to prove that I' |= C'.
+    
+
+Complete the prove:
+
+...
+
+
+
+--------------------------------------------------------------------------------------------------
+
+
+Problem 3. (3 points).
+
+Consider the following decision problem, called "MaxSAT":
+  Input:    A natural number k and a set S of n propositional clauses {C_1,...,C_n}
+            over propositional symbols P.
+  Question: Is there any interpretation I: P -> {0, 1} that satisfies at least k clauses of S?
+
+3a) Do you think that MaxSAT is polynomial? NP-complete? Exponential? Why?
+
+Answer:
+
+...
+
+
+3b) How would you use a SAT solver to decide it?
+    Hint: use new auxiliary variables x_1,..., x_n.
+
+Answer:
+
+...
+
+
+
+
+--------------------------------------------------------------------------------------------------
+
+
+
+
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
+FIRST-ORDER LOGIC:
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
+
+Problem 4. (3 points).
+
+4a) Let F be the FOLE formula:
+
+          Ez p(z)    &    Ax (p(x) -> Ey (-p(y) & x=f(y,y)))
+
+    - Let I be the interpretation with domain D_I = R (the real numbers), and
+
+        p_I(x)   = 1   iff x > 0
+        f_I(x,y) = x·y (the product in R)
+	
+      Do we have I |= F? Prove it informally
+
+Answer:
+
+Yes, I |= F, since we have that:
+
+Ez p(z) , because there exists a z > 0 in the real numbers (for example z = 14).
+Ax (p(x) -> Ey (-p(y) & x=f(y,y))),  because for any real number x > 0, we have the real number y = -sqrt(x) that is
+                                     negative or zero (the square root of a real number > 0 is positive, and negating it results in a negative)
+                                     and x = f(y, y) = y*y = -sqrt(x) * -sqrt(x) = sqrt(x)*sqrt(x) = sqrt(x)^2 = x (by definition of sqrt).
+
+
+     - If I' |= F, how many elements has at least I'? Prove it.
+
+Answer:
+
+It must have at least two:
+
+The following interpretation:
+D_I = {$, @}, p_I($) = 0, p_I(@) = 1, f_I(_,_) = @
+
+    where f_I(_,_) = @ means that f_I(p,q) = @ for any elements p and q.
+
+is a model for F, since there exists a z such that p(z) (z = @),
+and for any element x such that p(x) (we only have x = @), there exists a y = $ such that
+-p(y) = -p($) = 1 and x = f(y,y) => @ = f($,$) = @.
+
+
+Suppose we had a model with only one element in the domain D_I = {#}, then
+there would exist a z such that p(z). Meaning, p(#) = 1, but for any element x such that
+p(x) ( x = # )  there wouldn't exist an element y such that -p(y), because the only value that
+y can take is #.
+
+4b) Let F and G be the FOL formulas:
+
+    F = Ax p(a,x)  &  Ey -q(y)
+    G = Ez Eu (-q(u) & p(z,a))
+
+    Do we have F |= G? Prove it.
+
+
+Answer: Yes.
+
+F |= G iff F & -G is unsatisfiable. We'll prove by resolution that F & -G is unsatisfiable by reaching the empty clause []:
+
+We'll first transform each formula into causal clauses:
+
+Formula F:
+
+    Ax p(a,x)  &  Ey -q(y) =>  Skolemization
+    Ax p(a,x)  &  -q(c_y)  =>
+    Ax ( p(a,x) & -q(c_y)) => We'll split the formula into two different clauses
+
+    F1: Ax p(a,x)
+    F2: -q(c_y)
+
+Formula -G:
+    -( Ez Eu (-q(u) & p(z,a)) ) =>
+
+    -G: Az Au ( q(u) v -p(z,a))
+
+Let's now apply resolution until we get []:
+
+N  clauses   mgu        deduction
+------------------------------------------------
+1.  -G + F2   {u = c_y}   -p(z, a)
+2.  1 + F1   {z=a, x=a}   []
+
+Henceforth F & -G is unsatisfiable and F |= G.
+
+------------------------------------------------------------------------------------
+
+Problem 5. (3 points).
+
+An injective function is a function f that maps distinct elements of its domain
+to distinct elements in the codomain; that is, f(x1) = f(x2) implies x1 = x2.
+
+An exhaustive/surjective function is a function f such that every element of
+the function's codomain is the image of at least one element of its domain.
+
+Consider the following formula of FOLE:
+
+  ( A x E y (x = f(y))) & - ( Ax Ay (f(x) = f(y) -> x = y) )
+
+5a) Prove that it is satisfiable by giving a model with domain N (the natural numbers).
+
+Answer:
+
+The interpretation D_I = N, with f(n) = floor(n/2), satisfies the formula, since we have that:
+
+. ( A x E y (x = f(y))):                It's surjective, every natural number x has a natural number y = 2*x where x = f(y) = floor(2*x/2) = floor(x) = x.
+. - ( Ax Ay (f(x) = f(y) -> x = y) ):   It is not injective, since for x = 0 and y = 1 we have f(x) = f(y) = 0 but x != y.
+
+f(n) = floor(n/2)
+0 -> 0
+1 -> 0
+2 -> 1
+3 -> 1
+4 -> 2
+5 -> 2
+... etc
+
+
+5b) Is there any model with a finite domain? Why?
+
+Answer: No.
+
+The formula basically asks for a domain and a function such that the function is surjective and not injective.
+
+There is no finite model, because for a function to be surjective and not injective, since the codomain is the same as the domain working with FOLE,
+we need for every element of the codomain to have an element in the domain that maps to it. But, for f to not be injective, there must
+be a collision (two elements in the domain that map to the same element in the codomain). By the pigeonhole principle, this is not possible.
+
+Formally, since the domain is finite, |Codomain| = |Domain| because we are working in FOL (functions map tuples of elements from the domain to an element in the domain).
+If a function is not injective, then there must exist x,y such that x!=y but f(x) = f(y). Since the function must surjective however, every s must have a t s.t. f(t) = s.
+Since an element x can only have one value of f(x), it is impossible to map all remaining N-2 values to N-1 images (subtracting x,y and f(x)=f(y) respectively) and cover all images.
+
+------------------------------------------------------------------------------------
+
+Problem 6. (4 points).
+
+A *unital magma* is a set S equipped with a binary operation
+
+p: S x S -> S
+
+satisfying that there exists an element e in S such that
+for every element x in S, the equalities
+
+equal(p(e, x), x)
+
+and
+
+equal(p(x, e), x) hold.
+
+This element is called the identity element.
+
+Prove in **FOL** that the identity element is unique.
+Use that equality is transitive and symmetric.
+NOTE: Here the "equal" predicate is a "standard" predicate of FOL, NOT the "built-in" predicate of FOLE.
+
+Hint: write formulas A,B,... and U (where U expresses "the identity element e is unique"), and prove with resolution that  A & B & ... |= U.
+
+
+Answer:
+
+We'll use the predicate ident(x) (x is identity element), and equal(x,y).
+
+Let U = "the identity element is unique" => -(Ex Ey ( -equal(x,y) & ident(x) & ident(y))).
+Let B = "properties of the identity element" => Ax ( ident(x) -> Ay ( equal(p(x, y), y) & equal(p(y, x), y))).
+Let C = "symmetry of equality"   => Ax Ay (equal(x, y) -> equal(y, x))
+Let D = "transitivity of equality" => Ax Ay Az ( equal(x, y) & equal(y, z) -> equal(x, z))
+
+We now will prove by resolution that B & C & D |= U by proving that B & C & D & -U is unsatisfiable. We'll first transform each formula into causal clauses:
+
+Formula -U:
+
+ Ex Ey ( -equal(x,y) & ident(x) & ident(y)) => Skolemization where e and e' are two constants
+ -equal(e', e) & ident(e') & ident(e) => Split into three different clauses
+
+ V1: -equal(e', e)
+ V2: ident(e)
+ V3: ident(e')
+
+Formula B:
+ Ax ( ident(x) -> Ay ( equal(p(x, y), y) & equal(p(y, x), y))) =>
+ Ax ( -ident(x) v Ay ( equal(p(x, y), y) & equal(p(y, x), y))) =>
+ AxAy ( -ident(x) v ( equal(p(x,y), y) & equal(p(y, x), y))) =>
+ AxAy ( ( -ident(x) v equal(p(x,y),y))  &  ( -ident(x) v equal(p(y,x), y))) => Split into two different clauses
+
+ B1: -ident(x) v equal(p(x, y), y)
+ B2: -ident(x) v equal(p(y, x), y)
+
+Formmula C:
+ AxAy ( equal(x,y) -> equal(y,x)) =>
+ AxAy ( -equal(x,y) v equal(y,x)) =>
+ -equal(x,y) v equal(y,x)
+
+Formula D:
+ AuAvAw ( equal(u, v) & equal(v, w) -> equal(u, w)) =>
+ AuAvAw ( -equal(u,v) v -equal(v,w) v equal(u,w)) =>
+ -equal(u,v) v -equal(v,w) v equal(u,w)
+
+We'll now apply resolution until we deduce the empty clause []:
+
+N   clauses   mgu             deduction
+----------------------------------------------
+1.  B1+V2     {x=e}           equal(p(e, z), z)   // Let us change the name of the variable y->z so it's less confusing
+2.  V3+B2     {x=e'}          equal(p(y, e'),y)
+3.  C+1     {x=p(e,z), y=z}   equal(z, p(e, z))
+4.  3+D     {u=z v=p(e,z)}    -equal(p(e, z), w) v equal(z, w)
+5.  V1+4    {z=e', w=e}       -equal(p(e, e'),e)
+6.  5+2     {y=e}             []
+
+Therefore, since (B & C & D) & -U is unsat then U is a logical consequence of B & C & D and we have proved that
+a unital magma identity element is unique.
+------------------------------------------------------------------------------------

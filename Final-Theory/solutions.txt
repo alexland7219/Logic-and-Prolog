@@ -1,0 +1,313 @@
+--------------------------------------------------------------------------------------------------
+Logic in Computer Science, Juny 15th, 2023. Time: 2h30min. No books or lecture notes allowed.
+--------------------------------------------------------------------------------------------------
+Note on evaluation: eval(propositional logic) = max(eval(Problems 1,2,3), eval(midterm exam))
+                    eval(first-order logic)   = eval(Problems 4,5,6).
+
+ - Insert your answers on the dotted lines ... below, and only there.
+ - Do NOT modify the problems
+ - When finished, upload this file with the same name: exam.txt
+ - Use the text symbols:     &     v    -       ->          |=        A       E
+     for                    AND   OR   NOT   IMPLIES   "SATISFIES"  FORALL  EXISTS,  like in:
+     I  |=  p & (q v -r)     (the interpretation I satisfies the formula p & (q v -r)  ).
+     You can write subindices using "_". For example write x_i to denote x-sub-i.
+--------------------------------------------------------------------------------------------------
+
+
+Problem 1. (3 points).
+
+For each one of the following statements, indicate if it is true or false for propositional logic.
+Answer T (true) or F (false) on each dotted line ... Give no explanations why.
+Below always F,G,H are formulas and I is an interpretation.
+Note: Wrong answers subtract 0.4 points. Unanswered questions subtract 0.2 points.
+
+     Answer:
+ 1)    T     It is decidable in polynomial time whether a given formula is a tautology.
+ 2)    T     If F is unsatisfiable, then for every G we have F |= G.
+ 3)    T     The Tseitin transformation can be used for reducing SAT to 3-SAT.
+ 4)    F     The formula  p  is a logical consequence of  (p v r)  &  (-q v r)  &  (q v r). 
+ 5)    T     Given a formula F, the Tseitin transformation of F always has a number of clauses that is linear in the size of F.
+ 6)    T     If F is tautology, then -F |= F.
+ 7)    F     There are infinitely many different formulas that are not logically equivalent, even if there is only one predicate symbol.
+ 8)    T     F is satisfiable if, and only if, all logical consequences of F are satisfiable formulas.
+ 9)    T     If there are n propositional symbols, there are 2^(2n)  (2 to the power 2n) different clauses.
+10)    T     Given I and F, it is decidable in linear time whether I |= F.
+11)    T     If  F v G  |=  H  then F & -H is unsatisfiable. 
+12)    T     The closure under resolution Res(S) of a finite set of clauses S is always a finite set of clauses.
+13)    T     If F is a tautology, then for every G we have G |= F.
+14)    T     It is decidable in polynomial time whether a given formula in DNF is satisfiable.
+15)    F     Given a formula F, the Tseitin transformation of F is a set of clauses that is logically equivalent to F.
+16)    T     The formula  (p v q) & (-p v q) & (-p v -q) & (-q v p)  is unsatisfiable.
+17)    T     Given a set of Horn clauses S,  we can find in linear time a minimal model I of S, that is, a model I with the minimal |{ p | I(p)=1 }|.
+18)    T     There are infinitely many different formulas, even if there is only one predicate symbol.
+
+
+--------------------------------------------------------------------------------------------------
+
+
+Problem 2. (4 points).
+
+2a)
+
+My friend John says that he has found a new way to speed up SAT solving.
+Before starting his SAT solver, he removes from the set of clauses S some clauses he calls "unnecessary":
+
+   A: if there is some variable x that appears only in positive literals of clauses of S,
+      then he removes from S all clauses containing x.
+
+   B: similarly, if some variable y appears in S only in negative literals
+      then he removes from S all clauses containing y.
+
+Note that after eliminating some "unnecessary" clauses, step A or B may be (or become) applicable for
+other variables, so John continues doing this until no more variables of type A or B exist and
+then launches his solver on a (hopefully) much smaller set of clauses.
+
+Is John's idea correct? Explain why (in approximately 50 words).
+
+
+Answer:
+
+Yes. Each time such a subset of clauses is removed, the satisfiability is not changed.
+For case A, let S be the set  S' U {x v C_1, ..., x v C_k}   where x does not appear in S'.
+Then S and S' are equisatisfiable:
+if I is an interpretation with I |= S then  I |= S' because  S includes S';
+reversely, if I' |= S' then we can extend I' to a an interpretation I with I(x)=1 and we get I |= S.
+Case B is of course analogous (extending I' with I(x)=0).
+
+
+
+2b)
+
+Given two clauses C, D, in what follows we will denote the resolution of C and D by Res(C, D).
+
+Given a set of clauses S and a clause C, a literal l in C *blocks* C with respect to S if
+for each clause C' in S with -l in C', the conclusion (resolvent) Res(C, C') is a tautology
+
+We can identify the *blocked* clauses and remove them from the initial set of clauses S while preserving satisfiability.
+
+So we need to prove the following result:
+
+  if clause C in S is blocked by l with respect to S, and S - {C} is satisfiable, then so is S.
+
+Beginning of the prove:
+
+  Let I be such that I |= S - {C}. If I |= C then S is obviously satisfiable.
+  So let us assume that  not(I |= C). Define I' so that I'(l) = 1 - I(l),
+  I'(l') = I(l') if var(l') != var(l). Since l in C and not(I |= C), it must be I(l) = 0.
+  So I'(l) = 1 - I(l) = 1 and I' |= C.
+
+  In what follows we will prove that I' |= S - {C}.
+
+  To that end, let us consider C' in S, C' != C. We want to prove that I' |= C'.
+    
+
+Complete the prove:
+
+  If -l is not in C', then the satisfaction of C' is not affected by the flip from I to I', and I' |= C'.
+
+  So let us assume that -l in C'. Since I(l) = 0 and not(I |= C), it cannot be that -l in C.
+  So by definition of blocking literal, as C' in F we have that Res(C, C') is a tautology.
+  Hence I |= Res(C, C'), and there is a literal l' in Res(C, C') such that I(l') = 1.
+  Since var(l') != var(l), we have I'(l') = 1. Moreover, l' in C or l' in C'.
+  If l' in C, then I(l') = 1 would imply I |= C, a contradiction.
+  So it must be l' in C'. So I' |= C'.
+
+
+
+
+--------------------------------------------------------------------------------------------------
+
+
+Problem 3. (3 points).
+
+Consider the following decision problem, called "MaxSAT":
+  Input:    A natural number k and a set S of n propositional clauses {C_1,...,C_n}
+            over propositional symbols P.
+  Question: Is there any interpretation I: P -> {0, 1} that satisfies at least k clauses of S?
+
+3a) Do you think that MaxSAT is polynomial? NP-complete? Exponential? Why?
+
+Answer: NP-complete:
+  - it is in NP because we can check solutions in PTIME (in fact, linear time).
+  - it is NP-hard, because we can reduce SAT of a set of clauses S to MaxSAT of S setting k=|S|.
+
+
+3b) How would you use a SAT solver to decide it?
+    Hint: use new auxiliary variables x1,...,xn.
+
+Answer:
+
+Let S  be {C1, ..., Cn}. Introduce new variables x1,...,xn.
+Let S1 be {C1 v -x1, ..., Cn v -xn}.
+Let S2 be the set of clauses encoding the cardinality constraint  x1 + ... + xn >= k.
+Run the SAT solver on S1 U S2.
+
+
+
+--------------------------------------------------------------------------------------------------
+
+
+
+
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
+FIRST-ORDER LOGIC:
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
+
+Problem 4. (4 points).
+
+4a) Let F be the FOLE formula:
+
+          Ez p(z)    &    Ax (p(x) -> Ey (-p(y) & x=f(y,y)))
+
+    - Let I be the interpretation with domain D_I = R (the real numbers), and
+
+        p_I(x)   = 1   iff x > 0
+        f_I(x,y) = x·y (the product in R)
+	
+      Do we have I |= F? Prove it informally
+
+Answer:
+
+Indeed I |= F. There are strictly positive real numbers, and
+for any strictly positive real number x, we have that -sqrt(x) <= 0
+(actually, -sqrt(x) < 0) and (-sqrt(x)) * (-sqrt(x)) = x.
+
+
+     - If I' |= F, how many elements has at least I'? Prove it.
+
+Answer:
+
+Since Ez p(z) must hold, there must be an element Z in the domain such that p(Z).
+And as Ax (p(x) -> Ey (-p(y) & x=f(y,y))), there must exist Y such that -p(Y) and  Z = f(Y ,Y).
+Since p(Z) and -p(Y) must both hold, Z and Y have to be different.
+So if I' |= F, at least I' must have 2 elements.
+As an example of model for which this bound is tight, consider the same interpretation as given
+in the statement, but using D_I = {-1, 1}.
+
+     
+
+4b) Let F and G be the FOL formulas:
+
+    F = Ax p(a,x)  &  Ey -q(y)
+    G = Ez Eu (-q(u) & p(z,a))
+
+    Do we have F |= G? Prove it.
+
+
+Answer:
+
+Yes.
+
+-G is logically equivalent to  Av Aw (q(w) v -p(v,a)).
+
+Clausal form of F & -G:
+
+1. p(a,x)
+2. -q(b)   (b is a Skolem constant [c_y])
+3. q(w) v -p(v,a)
+
+Clause   Premises    MGU       Resolvent
+----------------------------------------
+A.       2, 3       {x = b}    -p(v,a)         
+B.       1, A       {v=a,x=a}     []
+
+
+
+
+------------------------------------------------------------------------------------
+
+Problem 5. (3 points).
+
+An injective function is a function f that maps distinct elements of its domain
+to distinct elements in the codomain; that is, f(x1) = f(x2) implies x1 = x2.
+
+An exhaustive/surjective function is a function f such that every element of
+the function's codomain is the image of at least one element of its domain.
+
+Consider the following formula of FOLE:
+
+  ( A x E y (x = f(y))) & - ( Ax Ay (f(x) = f(y) -> x = y) )
+
+5a) Prove that it is satisfiable by giving a model with domain N (the natural numbers).
+
+Answer:
+
+f(x) = x div 2
+
+Then f(0) = f(1), and f is not injective.
+But as the div function is exhaustive so is f.
+
+
+5b) Is there any model with a finite domain? Why?
+
+Answer:
+
+No.
+Any function f: S -> S with a finite domain S is injective if and only if it is exhaustive.
+
+
+
+------------------------------------------------------------------------------------
+
+Problem 6. (4 points).
+
+A *unital magma* is a set S equipped with a binary operation
+
+p: S x S -> S
+
+satisfying that there exists an element e in S such that
+for every element x in S, the equalities
+
+equal(p(e, x), x)
+
+and
+
+equal(p(x, e), x) hold.
+
+This element is called the identity element.
+
+Prove in **FOL** that the identity element is unique.
+Use that equality is transitive and symmetric.
+NOTE: Here the "equal" predicate is a "standard" predicate of FOL, NOT the "built-in" predicate of FOLE.
+
+Hint: write formulas A,B,... and U (where U expresses "the identity element e is unique"), and prove with resolution that  A & B & ... |= U.
+
+Answer:
+
+Formalization:
+
+A. Ax equal( p(e, x), x )
+B. Ax equal( p(x, e), x )
+C. Ax Ay Az ( equal( x, y ) & equal( y, z ) -> equal(x, z) )
+D. Ax Ay    ( equal( x, y ) -> equal(y, x) )
+U. Ay ( Ax equal( p(y, x), x ) & Ax equal( p(x, y), x ) -> equal( y, e ) )
+
+We have to see that A & B & C & D |= U.
+Let us prove that A & B & C & D & -U |= [].
+
+Clauses:
+
+  A.  equal( p(e, u), u )
+  B.  equal( p(v, e), v )
+  C. -equal( x, y ) v -equal( y, z ) v equal(x, z)
+  D. -equal( r, s ) v equal(s, r)
+-U1.  equal( p(f, t), t )
+-U2.  equal( p(w, f), w )
+-U3. -equal( f, e )
+
+where f is a fresh constant symbol introduced in the Skolemization.
+
+Resolution:
+N   From:     mgu:                  new clause: (variables are renamed by adding primes)
+1.   A,C      {y=p(e, u), z=u}      -equal( x',   p(e, u') ) v equal(x',  u')
+2.   D,1      {s=x', r=p(e, u')}    -equal( p(e, u''), x'' ) v equal(x'', u'')
+3. -U2,2      {w=e, u''=f, x''=e}    equal(e, f)
+4.   D,3      {r=e, s=f }            equal(f, e)
+5. -U3,4      { }                    []  
+
+
+------------------------------------------------------------------------------------
