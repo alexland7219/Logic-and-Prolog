@@ -10,4 +10,5 @@ S1 to S6 directories contain different exercises of each lab session:
 - **S5** with more advanced problems in Prolog
 - **S6** where we solve hard problems with CLPFD (constraint logic programming over finite domains) in Prolog
 
-Furthermore there are two theory exams (Zeroeth 
+Furthermore there are two theory exams (Zeroth-order Logic and First Order Logic resp.) and their solutions (suffixed with "-sol").
+There are also two lab examsn (Labs S1-S3 being the midterm and S4-S6 final). Solutions are also attached.
