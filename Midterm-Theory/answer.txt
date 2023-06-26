@@ -1,0 +1,218 @@
+
+--------------------------------------------------------------------------------------------------
+Logic in Computer Science, April 20th, 2023. Time: 1h45min. No books or lecture notes allowed.
+--------------------------------------------------------------------------------------------------
+ - Insert your answers on the dotted lines ... below, and only there.
+ - When finished, upload this file with the same name: exam.txt
+ - Use the text symbols:     &     v    -       ->          |=        A       E
+     for                    AND   OR   NOT   IMPLIES   "SATISFIES"  FORALL  EXISTS  etc.,  like in:
+    I |=  p & (q v -r)     (the interpretation I satisfies the formula p & (q v -r)  ).
+   You can write  not (I |= F)  to express "I does not satisfy F",  or
+                  not (F |= G)  to express "G is not a logical consequence of F"
+   Also you can use subindices with "_". For example write x_i to denote x-sub-i.
+--------------------------------------------------------------------------------------------------
+
+
+Problem 1. (2.5 points).
+
+1a) Let F, G, H be formulas. Prove that if F v G |= H then F & -H is unsatisfiable,
+    using only the definition of propositional logic.
+
+Answer:
+        F v G |= H                                 ==>   [by def. of logical consequence]
+    A I, if I |= F v G then I |= H                 ==>   [by def. of |=]
+    A I, if eval_I(F v G)=1 then eval_I(H) = 1     ==>   [by def. of implication]
+    A I, not(eval_I(F v G))=1 or eval_I(H) = 1     ==>   [since eval_I(X) can only be 0 or 1]
+    A I, eval_I(F v G) = 0 or eval_I(H) = 1        ==>   [by def. of v]
+    A I, max(eval_I(F),eval_I(G)) = 0 or eval_I(H)=1    ==> [since max(A, B)=0 implies A=0 by arithmetic if A \in {0,1}]
+    A I, eval_I(F) = 0 or eval_I(H) = 1             ==> [by arithmetic]
+    A I, eval_I(F) = 0 or 1 - eval_I(H) = 1         ==> [by definition of NOT]
+    A I, eval_I(F) = 0 or eval_I(-H) = 0            ==> [since "A=0 or B=0" implies that min(A, B) = 0 if A,B \in {0,1}]
+    A I, min(eval_I(F), eval_I(-H)) = 0             ==> [by definition of &]
+    A I, eval_I(F & -H) = 0                         ==> [since eval_I(X) can only be 0 or 1]
+    A I, not(eval_I(F & -H) = 1)                    ==> [by def. of |=]
+    A I, not( I |= (F & -H) )                       ==> [by def. of model]
+    A I, I is not a model of F & -H                 ==> [by def. of unsatisfiability]
+    F & -H is unsatisfiable.
+
+1b) Is it true that, for any two propositional formulas F and G, if F |= G
+    and G is satisfiable, then F is satisfiable?  If it is, prove it.
+    If it is not, give a concrete counterexample (and check it is so).
+    
+Answer:
+    It's not true. A counterexample could be:
+
+    F = p & -p
+    G = p
+
+    In this case, F |= G, since any model of F is a model G (F is unsatisfiable, it no models, and therefore any model of F is a model of G).
+    Also, G is satisfiable because I(p) = 1 would satisfy G = p.
+
+    However, F is a contradiction (unsatisfiable).
+
+
+--------------------------------------------------------------------------------------------------
+
+Problem 2. (2.5 points).
+
+2a) Write all clauses (as disjuctions of literals) obtained by applying Tseitin’s
+    transformation to the formula (p & (q v -r)) v q.
+    Use auxiliary variables named e0, e1, e2, ... (where e0 is for the root).
+
+Answer:
+    {
+        [e0],           % Root must be true
+        [-e0, q, e1],   % node e0 <-> e1 v q
+        [-q, e0],
+        [-e1, e0],
+        [-p, -e2, e1],  % node e1 <-> p & e2
+        [-e1, p],
+        [-e1, e2],
+        [-e2, q, e3]    % node e2 <-> q v e3
+        [-q, e2],
+        [-e3, e2],
+        [-e3, r],       % node e3 <-> -r
+        [r, e3]
+    }
+
+
+2b) Prove that it is not true that for any propositional formula F, F and Tseitin(F) are
+    logically equivalent.
+
+Answer:
+    Consider the tautology F = p v -p.
+
+    The Tseitin transformation would result in the following CNF (not using an extra node for the negation):
+
+    T = e0 & (-e0 v p v -p) & (-p v e0) & (p v e0).
+
+    This new formula T is not a tautology, since if I(e0) = 0 then eval_I(T) = 0 and I is not a model for T.
+
+    Since I would not be a model for T, but it would be a model for F (since F is a tautology),
+    Tseitin(F) and F are not logically equivalent.
+
+    Equisatisfiability does not imply logical equivalence. If it did, TAUTOLOGY on a DNF could be solved in polynomial time
+    by converting it to 3-SAT via Tseitin and then solving TAUTOLOGY for a CNF (linear). TAUTOLOGY on a DNF is NP-complete.
+
+2c) Is 3-SAT NP-complete? Explain your answer very briefly, using the fact that SAT
+    (deciding the satisfiability of an arbitrary propositional formula F) is NP-complete
+
+Answer:
+    Yes, 3-SAT is NP-complete, because:
+
+    - It is in NP, since given an interpretation I we can iterate through all clauses and check that all are satisfied in linear time wrt the length of the formula.
+      Therefore, we can verify a witness in O(|F|^c) where |F| is the size of the input formula.
+    - It is NP-hard, since we can reduce SAT (NP-complete) to 3-SAT by adding auxiliary variables and splitting clauses if a clause has > 3 literals.
+      The reduction can be done in polynomial time wrt the size of the input SAT formula and therefore 3SAT is NP-hard.
+
+
+--------------------------------------------------------------------------------------------------
+
+Problem 3. (2.5 points).
+
+3) Given S a set of clauses (CNF) over *n* propositional symbols,
+   and Resolution the deductive rule:
+   
+                 p v C          -p v D
+		 ---------------------      for some symbol p
+		         C v D
+
+   Let Res(S) be its closure under resolution. For each one of the
+   following cases, indicate whether Res(S) is infinite or finite,
+   and, if finite, express an accurate upper bound on its size in terms of n.
+   Very briefly explain why. Use the notation a^b to express exponentiation.
+
+3a) S is a set of Horn clauses.
+
+Answer:
+    Finite because Res(S) is always finite.
+    Bound is n * 2^n, the max number of clauses, because in each deductive step (p v C) & (-p v D) => C v D we lose one clause (and one positive literal) from the number of clauses.
+    For every positive literal x we could have 2^n clauses where x appears positively (only negated literals since it's Horn).
+
+3b) If clauses in S have at most two literals.
+
+Answer:
+    Finite because Res(S) is always finite.
+    Bound is  n*(2n - 1), because there are 2n literals, the number of clauses is (2n choose 2) = n*(2n-1) by combinatorics, and in each
+    deductive step we subtract one clause from the total number of clauses.
+
+
+3c) S is an arbitrary set of propositional clauses.
+
+Answer:
+    Finite because Res(S) is always finite.
+    The bound is 2^(2*n) = 4^n because in each step of the closure by resolution we remove one clause and add the new resulting clause to Res(S).
+    The maximum number of clauses with n symbols is 2^(2*n) since we have 2n literals, and a clause is any member of the powerset of P.
+
+
+--------------------------------------------------------------------------------------------------
+
+Problem 4. (2.5 points).
+
+4a) Prove that for any propositional formula F (that is, built up with AND (&), OR (v) and
+    NOT (-) connectives), there exists a logically equivalent formula G which is built up with
+    exclusively NAND connectives (and propositional symbols).
+
+    We recall that the NAND connective is defined as NAND(x, y) = -(x & y).
+
+Answer:
+    We will prove it by induction.
+
+    If F contains no ANDs, ORs or NOTs, then G = F (no connectives). This is the base case of the induction.
+
+    If F = -H, then G = NAND(H, H).
+    This is logically equivalent to NOT(H) because if eval_I(H) = 1, then NAND(1, 1) = -(1 & 1) = 0 = NOT(1); and if eval(H) =0 then NAND(0, 0) = -(0 & 0) = 1 = NOT(0).
+
+    If F = C & D, then G = NAND( NAND(C, D), NAND(C, D)).   (Assume C and D are built by only NANDS)
+    G is logically equivalent to F = AND(C, D) and we can prove it with a truth table:
+
+    C  D  F  NAND(C,D)  G = NAND( NAND(C, D), NAND(C, D))
+    0  0  0     1       0
+    0  1  0     1       0
+    1  0  0     1       0
+    1  1  1     0       1
+
+    If F = C v D, then G = NAND ( NAND(C, C), NAND(D, D)).     (Assume C and D are build by only NANDS)
+    We can prove that F is logically equivalent to G by the truth table below:
+
+    C  D  F  NAND(C,C)  NAND(D,D)  G=NAND( NAND(C,C), NAND(D,D))
+    0  0  0     1           1               0
+    0  1  1     1           0               1
+    1  0  1     0           1               1
+    1  1  1     0           0               1
+
+    Therfore, since we recursively transform any formula F into an F' that maintains its logical equivalence and only has NANDs,
+    any F has a logically equivalent formula with only NANDS.
+
+4b) Let P be a fixed set of propositional symbols.
+    Given two interpretations I, I': P -> {0, 1}, we write
+        I <= I' iff I(p) <= I'(p) for all p in P.
+    We say a formula F is MONOTONIC iff I <= I' implies that eval_I(F) <= eval_I'(F).
+
+    Prove that any propositional formula F built up only with AND & and OR v connectives
+    is monotonic. Hint: use induction on F.
+
+Answer:
+    If F contains no ANDs or ORs, then we have that F = p (one literal).
+    In this case, I <= I' would imply that eval_I(p) = I(p) <= I'(p) = eval_I'(p) and therefore eval_I(p) <= eval_I'(p).
+
+
+    If F = C & D where C and D are two other formulas built by ANDs and/or ORs. Assume C and D are monotonic (by induction).
+    Then I <= I' implies that eval_I(C) <= eval_I'(C) [same for D] because:
+
+    - If I <= I' and eval_I(C) = 0 and eval_I'(C) = 1, then eval_I(F) = 0 and since eval(X) \in {0,1}, eval_I(F) <= eval_I'(F). (same for D)
+    - If I <= I' and eval_I(C) = eval_I'(C) = 0, then eval_I(F) = 0 <= 0 = eval_I'(F) (same for D).
+    - Finally if I <= I' and eval_I(C) = eval_I'(C) = 1, then eval_I(F) = eval_I(D) <= eval_I'(D) = eval_I'(D) (same for D).
+
+    Therefore if F is a conjunction of two monotonic formulas F is monotonic
+
+    If F = C v D where C and D are two other formulas built by ANDs and/or ORs. Assume C and D are monotonic (by induction).
+    Then I <= I' implies that eval_I(C) <= eval_I'(C) [same for D] because:
+
+    - If I <= I' and eval_I(C) = 0 and eval_I'(C) = 1, then eval_I(F) <= eval_I'(F) = 1 (same for D)
+    - If I <= I' and eval_I(C) = eval_I'(C) = 0, then eval_I(F) = eval_I(D) <= eval_I'(D) = eval_I'(F) (same for D).
+    - Finally if I <= I' and eval_I(C) = eval_I'(C) = 1, then eval_I(F) = 1 <= 1 = eval_I'(D) (same for D).
+
+    Therefore if F is a disjunction of two monotonic formulas F is monotonic
+
+    By induction, any F built upon ANDs and ORs is monotonic.
