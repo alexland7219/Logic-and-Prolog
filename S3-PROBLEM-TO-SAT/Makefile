@@ -1,19 +1,12 @@
-#file = miSudoku
-#file = teams
-#file = events
-#file = newBusCompany
-#file = voley
-#file = olympiad
-#file = roads
-file = tsp
+FILES = miSudoku teams events newBusCompany voley olympiad roads tsp tents-trees
 
-$(file): $(file).pl
-	swipl -q -O -g main --stand_alone=true -o $(file) -c $(file).pl
+%: %.pl
+	swipl -q -O -g main --stand_alone=true -o $@ -c $<
 
-.PHONY: clean realclean
+.PHONY: clean realclean $(FILES)
 
 clean:
 	-rm -f clauses header infile.cnf model
 
 realclean: clean
-	-rm -f $(file)
+	-rm -f $(FILES)
